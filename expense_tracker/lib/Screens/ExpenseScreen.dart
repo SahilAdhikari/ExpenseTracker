@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:expense_tracker/Controllers/ExpenseController.dart';
 import 'package:expense_tracker/Controllers/UserController.dart';
 import 'package:expense_tracker/Models/Tags.dart';
@@ -7,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 import '../Models/Expense.dart';
+import 'package:get/get.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -89,6 +92,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   }
 
   Widget expenseListView() {
+    var showAllList = false.obs;
     Widget expenseViewListTile(Expense expense) {
       Tag? tag = tagData[expense.category!];
       return ListTile(
@@ -127,13 +131,19 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                   fontWeight: FontWeight.bold,
                   fontSize: 20),
             ),
-            TextButton(onPressed: () {}, child: Text("View All"))
+            TextButton(
+                onPressed: () {
+                  showAllList.value = !showAllList.value;
+                },
+                child: Text(showAllList.value ? "View Less" : "View More"))
           ],
         ),
         Obx(
           () => ListView.builder(
               shrinkWrap: true,
-              itemCount: expenseController.userExpenses.length,
+              itemCount: showAllList.value
+                  ? expenseController.userExpenses.length
+                  : min(expenseController.userExpenses.length, 3),
               itemBuilder: (context, index) =>
                   expenseViewListTile(expenseController.userExpenses[index])),
         ),
@@ -166,8 +176,10 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             ));
   }
 
+  // fix this later
+  var _categorySelectedValue = "Health".obs;
   Widget AddExpenseFormView() {
-    String _categorySelectedValue = "Health";
+    TextEditingController _amountController = TextEditingController();
     return Container(
       padding: EdgeInsets.all(8),
       child: Column(
@@ -190,7 +202,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             ),
             title: Text(DateFormat.yMMMd().format(DateTime.now())),
           ),
-          ListTile(
+          Obx(() => ListTile(
               leading: Icon(Icons.category, color: Colors.black),
               title: DropdownButton(
                 items: [
@@ -208,12 +220,13 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                   )
                 ],
                 hint: Text('Select your expense category'),
-                value: _categorySelectedValue,
+                value: _categorySelectedValue.toString(),
                 onChanged: (value) {
-                  _categorySelectedValue = value.toString();
-                  setState(() {});
+                  _categorySelectedValue.value = value.toString();
+                  print('value : $_categorySelectedValue $value');
+                  // setState(() {});
                 },
-              )),
+              ))),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
@@ -246,6 +259,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
+                controller: _amountController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Amount',
@@ -271,7 +285,19 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                   contentPadding: const EdgeInsetsDirectional.all(16),
                 )),
           ),
-          ElevatedButton(onPressed: () {}, child: Text("SAVE EXPENSE"))
+          ElevatedButton(
+              onPressed: () {
+                Expense expense = Expense(
+                    amount: _amountController.text,
+                    category: _categorySelectedValue.value,
+                    dateTime: DateFormat('yyyy-mm-dd').format(DateTime.now()),
+                    expenseId:
+                        DateTime.now().toString() + userController.userName!,
+                    userName: userController.userName!);
+                expenseController.addExpense(expense);
+                Navigator.pop(context);
+              },
+              child: Text("SAVE EXPENSE"))
         ],
       ),
     );
@@ -280,6 +306,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {

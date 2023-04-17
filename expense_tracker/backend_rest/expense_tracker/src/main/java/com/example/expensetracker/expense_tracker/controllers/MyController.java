@@ -63,5 +63,11 @@ public class MyController{
     public Expense addExpense(@RequestBody Expense expense) {
         return this.expenseService.addExpense(expense);
     }
+
+    //get all expenses
+    @GetMapping(path = "/expenses/{userName}")
+    public List<Expense> getAllExpensesByUserName(@PathVariable String userName) {
+        return this.expenseService.getAllExpensesByUserName(userName);
+    }
     
 }

@@ -9,5 +9,6 @@ import com.example.expensetracker.expense_tracker.entities.Expense;
 public interface ExpenseService {
     public List<Expense> getAllExpenses();
     public Expense addExpense(Expense expense);
+    public List<Expense> getAllExpensesByUserName(String userName);
 
 }

@@ -22,5 +22,10 @@ public class ExpenseServiceImpl implements ExpenseService{
         expenseDao.save(expense);
         return expense;
     }
+    @Override
+    public List<Expense> getAllExpensesByUserName(String userName) {
+        // TODO Auto-generated method stub
+         return expenseDao.findAllByUserName(userName);
+    }
     
 }

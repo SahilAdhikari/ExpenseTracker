@@ -57,6 +57,15 @@ class ExpenseController extends GetxController {
       print('getAllExpensesException : ' + e.toString());
     }
   }
+
+  addExpense(Expense expense) async {
+    try {
+      var res = await dio.post(baseUrl + '/addExpense', data: expense.toJson());
+      expenseController.userExpenses.add(expense);
+    } catch (e) {
+      print('addExpenseExpention : ' + e.toString());
+    }
+  }
 }
 
 var expenseController = ExpenseController();
