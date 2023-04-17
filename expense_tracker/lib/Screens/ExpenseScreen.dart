@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -123,6 +124,142 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     );
   }
 
+  // build sliding sheet for adding an expense
+  buildAddExpenseBottomSheet(BuildContext context) {
+    return showSlidingBottomSheet(context,
+        resizeToAvoidBottomInset: true,
+        builder: (context) => SlidingSheetDialog(
+              isDismissable: true,
+              color: Colors.blueAccent.shade200,
+              cornerRadius: 16,
+              avoidStatusBar: true,
+              snapSpec: const SnapSpec(
+                snappings: [0.7],
+              ),
+              headerBuilder: (context, state) {
+                return Container(
+                  height: 30,
+                  alignment: Alignment.center,
+                  child: Container(
+                      width: 40, height: 6, color: Colors.grey.shade200),
+                );
+              },
+              builder: (context, state) =>
+                  Material(child: AddExpenseFormView()),
+            ));
+  }
+
+  Widget AddExpenseFormView() {
+    String _categorySelectedValue = "Health";
+    return Container(
+      padding: EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "ADD YOUR EXPENSE",
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic),
+            ),
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.calendar_month_rounded,
+              color: Colors.black,
+            ),
+            title: Text(DateFormat.yMMMd().format(DateTime.now())),
+          ),
+          ListTile(
+              leading: Icon(Icons.category, color: Colors.black),
+              title: DropdownButton(
+                items: [
+                  DropdownMenuItem(
+                    child: Text("Health"),
+                    value: "Health",
+                  ),
+                  DropdownMenuItem(
+                    child: Text("Education"),
+                    value: "Education",
+                  ),
+                  DropdownMenuItem(
+                    child: Text("Food"),
+                    value: "Food",
+                  )
+                ],
+                hint: Text('Select your expense category'),
+                value: _categorySelectedValue,
+                onChanged: (value) {
+                  _categorySelectedValue = value.toString();
+                  setState(() {});
+                },
+              )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+                minLines: 2,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  hintText: 'About Your Expense',
+                  prefixIcon: Icon(
+                    Icons.description,
+                    color: Colors.black,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.black,
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.blueAccent,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsetsDirectional.all(16),
+                )),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Amount',
+                  hintText: 'Expense Amount',
+                  prefixIcon: Icon(
+                    Icons.currency_rupee_sharp,
+                    color: Colors.black,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.black,
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.blueAccent,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsetsDirectional.all(16),
+                )),
+          ),
+          ElevatedButton(onPressed: () {}, child: Text("SAVE EXPENSE"))
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -130,6 +267,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             // Add your onPressed code here!
+            buildAddExpenseBottomSheet(context);
           },
           backgroundColor: Colors.blue,
           child: const Icon(Icons.add),

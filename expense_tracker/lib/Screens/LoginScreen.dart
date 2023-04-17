@@ -1,3 +1,4 @@
+import 'package:expense_tracker/Screens/HomeScreen.dart';
 import 'package:flutter/material.dart';
 
 class LogInScreen extends StatefulWidget {
@@ -59,7 +60,13 @@ class _LogInScreenState extends State<LogInScreen> {
                   customTextFormField(),
                   customTextFormField(),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ));
+                    },
                     child: Text('SIGN IN'),
                   )
                 ],
