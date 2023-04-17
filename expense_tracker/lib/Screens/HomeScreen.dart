@@ -1,3 +1,4 @@
+import 'package:expense_tracker/Screens/AnalyticsScreen.dart';
 import 'package:expense_tracker/Screens/ExpenseScreen.dart';
 import 'package:expense_tracker/Screens/LoginScreen.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  final List<Widget> _pages = <Widget>[ExpenseScreen(), LogInScreen()];
+  final List<Widget> _pages = <Widget>[ExpenseScreen(), AnalyticsScreen()];
 
   @override
   void initState() {

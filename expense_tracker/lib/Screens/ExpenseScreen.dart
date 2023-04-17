@@ -1,6 +1,12 @@
+import 'package:expense_tracker/Controllers/ExpenseController.dart';
+import 'package:expense_tracker/Controllers/UserController.dart';
+import 'package:expense_tracker/Models/Tags.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
+
+import '../Models/Expense.dart';
 
 class ExpenseScreen extends StatefulWidget {
   const ExpenseScreen({super.key});
@@ -10,6 +16,13 @@ class ExpenseScreen extends StatefulWidget {
 }
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    expenseController.getAllExpenses();
+    super.initState();
+  }
+
   Widget pageHeader(String userName) {
     double fontSize = 26;
     return Row(
@@ -76,26 +89,27 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   }
 
   Widget expenseListView() {
-    Widget expenseViewListTile() {
+    Widget expenseViewListTile(Expense expense) {
+      Tag? tag = tagData[expense.category!];
       return ListTile(
         leading: Container(
           height: 40,
           width: 40,
           decoration: BoxDecoration(
-              color: Colors.red.shade100,
+              color: tag!.secondaryColor!,
               borderRadius: BorderRadius.circular(10)),
           child: Icon(
-            Icons.medical_information_outlined,
-            color: Colors.red,
+            tag.icon!,
+            color: tag.primaryColor!,
           ),
         ),
         title: Text(
-          "Health Check",
+          expense.category!,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(DateFormat('yyyy-MM-dd').format(DateTime.now())),
+        subtitle: Text(expense.dateTime!),
         trailing: Text(
-          'Rs 100',
+          'Rs ${expense.amount}',
           style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
         ),
       );
@@ -116,10 +130,13 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             TextButton(onPressed: () {}, child: Text("View All"))
           ],
         ),
-        ListView.builder(
-            shrinkWrap: true,
-            itemCount: 3,
-            itemBuilder: (context, index) => expenseViewListTile()),
+        Obx(
+          () => ListView.builder(
+              shrinkWrap: true,
+              itemCount: expenseController.userExpenses.length,
+              itemBuilder: (context, index) =>
+                  expenseViewListTile(expenseController.userExpenses[index])),
+        ),
       ],
     );
   }
@@ -278,7 +295,8 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                pageHeader('Sahil'),
+                pageHeader(
+                    toBeginningOfSentenceCase(userController.userName!)!),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

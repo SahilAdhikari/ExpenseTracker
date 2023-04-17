@@ -37,6 +37,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   intl:
   sliding_sheet:
+  http:
+  dio:
+  fluttertoast:
+  get:
 dev_dependencies:
   flutter_test:
     sdk: flutter
